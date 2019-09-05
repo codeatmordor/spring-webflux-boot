@@ -21,21 +21,21 @@ import reactor.test.StepVerifier;
 @Import(InstaAccountService.class)
 public class InstaAccountServiceTest {
 
-	private final InstaAccountService service;
-    private final InstaAccountRepository repository;
+	private final InstaAccountService instaAccountService;
+    private final InstaAccountRepository instaAccountRepo;
 
     public InstaAccountServiceTest(@Autowired InstaAccountService service, 
                               @Autowired InstaAccountRepository repository) {
-        this.service = service;
-        this.repository = repository;
+        this.instaAccountService = service;
+        this.instaAccountRepo = repository;
     }
     
     
     @Test 
     public void getAll() {
-        Flux<InstaAccount> saved = repository.saveAll(Flux.just(new InstaAccount(null, "Gaurav"), new InstaAccount(null, "Rahul"), new InstaAccount(null, "Jyoti")));
+        Flux<InstaAccount> saved = instaAccountRepo.saveAll(Flux.just(new InstaAccount(null, "Gaurav"), new InstaAccount(null, "Rahul"), new InstaAccount(null, "Jyoti")));
 
-        Flux<InstaAccount> composite = service.all().thenMany(saved);
+        Flux<InstaAccount> composite = instaAccountService.all().thenMany(saved);
 
         Predicate<InstaAccount> match = profile -> saved.any(saveItem -> saveItem.equals(profile)).block();
 
@@ -49,7 +49,7 @@ public class InstaAccountServiceTest {
     
     @Test
     public void save() {
-        Mono<InstaAccount> profileMono = this.service.create("email@email.com");
+        Mono<InstaAccount> profileMono = this.instaAccountService.create("email@email.com");
         StepVerifier
             .create(profileMono)
             .expectNextMatches(saved -> StringUtils.hasText(saved.getId()))
@@ -59,9 +59,9 @@ public class InstaAccountServiceTest {
     @Test
     public void delete() {
         String test = "test";
-        Mono<InstaAccount> deleted = this.service
+        Mono<InstaAccount> deleted = this.instaAccountService
             .create(test)
-            .flatMap(saved -> this.service.delete(saved.getId()));
+            .flatMap(saved -> this.instaAccountService.delete(saved.getId()));
         StepVerifier
             .create(deleted)
             .expectNextMatches(profile -> profile.getEmail().equalsIgnoreCase(test))
@@ -70,9 +70,9 @@ public class InstaAccountServiceTest {
 
     @Test
     public void update() throws Exception {
-        Mono<InstaAccount> saved = this.service
+        Mono<InstaAccount> saved = this.instaAccountService
             .create("test")
-            .flatMap(p -> this.service.update(p.getId(), "test1"));
+            .flatMap(p -> this.instaAccountService.update(p.getId(), "test1"));
         StepVerifier
             .create(saved)
             .expectNextMatches(p -> p.getEmail().equalsIgnoreCase("test1"))
@@ -82,9 +82,9 @@ public class InstaAccountServiceTest {
     @Test
     public void getById() {
         String test = UUID.randomUUID().toString();
-        Mono<InstaAccount> deleted = this.service
+        Mono<InstaAccount> deleted = this.instaAccountService
             .create(test)
-            .flatMap(saved -> this.service.get(saved.getId()));
+            .flatMap(saved -> this.instaAccountService.get(saved.getId()));
         StepVerifier
             .create(deleted)
             .expectNextMatches(profile -> StringUtils.hasText(profile.getId()) && test.equalsIgnoreCase(profile.getEmail()))
