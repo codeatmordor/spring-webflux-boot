@@ -4,7 +4,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
-import gk.org.webflux.repository.ProfileRepository;
+import gk.org.webflux.repository.InstaAccountRepository;
 import lombok.extern.log4j.Log4j2;
 import reactor.core.publisher.Flux;
 
@@ -16,9 +16,9 @@ import java.util.UUID;
 public class DataCreator implements ApplicationListener<ApplicationReadyEvent>{
 	
 	
-	private  final ProfileRepository repository;
+	private  final InstaAccountRepository repository;
 	
-	public DataCreator(ProfileRepository repository) {
+	public DataCreator(InstaAccountRepository repository) {
         this.repository = repository;
     }
 
@@ -29,7 +29,7 @@ public class DataCreator implements ApplicationListener<ApplicationReadyEvent>{
 	            .thenMany(
 	                Flux
 	                    .just("A", "B", "C", "D") 
-	                    .map(name -> new Profile(UUID.randomUUID().toString(), name + "@email.com")) 
+	                    .map(name -> new InstaAccount(UUID.randomUUID().toString(), name + "@email.com")) 
 	                    .flatMap(repository::save) 
 	            )
 	            .thenMany(repository.findAll()) 

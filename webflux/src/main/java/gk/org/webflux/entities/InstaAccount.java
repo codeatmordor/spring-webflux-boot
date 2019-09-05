@@ -11,11 +11,21 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Profile {
+public class InstaAccount {
 
 	
 	@Id
 	private String id;
 	
 	private String email;
+
+	
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 }
